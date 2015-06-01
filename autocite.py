@@ -28,6 +28,7 @@ def cleanup(rawList)
     for i in rawList:
         tempvar = rawList[i]
         tempvar = tempvar.replace(')', '')
+        tempvar = tempvar.replace('(', '')
         tempvar = tempvar.replace(',', '')
         tempvar = tempvar.replace('.', '')
         tempvar = tempvar.lstrip()
