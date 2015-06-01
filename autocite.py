@@ -33,7 +33,7 @@ def cleanup(rawList)
         tempvar = tempvar.replace('.', '')
         tempvar = tempvar.lstrip()
         tempvar = tempvar.rstrip()
-        ' '.join(tempvar.split())
+        tempvar = ' '.join(tempvar.split())
         # a little redundant, but who cares?
         cleanlist.append(tempvar)
     return cleanlist
