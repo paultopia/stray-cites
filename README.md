@@ -48,3 +48,9 @@ all of which are worth citing in a single book?  nobody, that's who.
 4.  how to get the text out of word files into python anyway?  there must be a library for this. 
 Or could just copy-paste all the footnotes into a plain text file like a rational person. with any luck that will 
 generate carriage returns.  one can hope. 
+
+answers:
+2.  so it appears there's a python-docx module floating around, but it can't handle footnotes.  
+on the other hand, it also appears that just copying a bunch of footnotes out of word 2011 for mac and pasting them 
+into textwrangler very kindly puts footnotes between them.  so buggerit.  at least for this implementation all citations 
+are in footnotes, so this will all be with plain text files.  
