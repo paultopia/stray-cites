@@ -2,37 +2,8 @@ import sys, re, argparse, string, codecs
 
 # written for python 3
 
-# save it all as ascii first, no need to worry about unicode so long as conversions to ascii are same in each file 
-# this means this script need not be written for python 3 after all, but what the hell, it's done now.
-
-# actually needs to be able to handle, but not match, unicode characters for greek text in notes. 
-# I think that should be ok... except for foreign authors.  it will break on foreign authors?
-# christ I may have to figure out unicode.
-# this stackoverflow may have answer: 
-# http://stackoverflow.com/questions/6005459/is-there-a-way-to-match-any-unicode-non-alphabetic-character
-
-# ALTERNATIVELY I can just run some damned command-line tool to convert all to ascii first.
-# also, bad news, it looks like I don't have consistent use of accents and such between text 
-# and refs.  this will produce spurious non-matches.  Still, as long as they are rare, 
-# can be fixed by hand.
-
-# converting to ascii seems like clearly best choice.  so long as the things that look like 
-# letters in unicode convert to letters in ascii that should work.
-
-# there appears to be a gnu app that can handle this: 
-# http://www.gnu.org/savannah-checkouts/gnu/libiconv/documentation/libiconv-1.13/iconv.1.html
-
-# the problem with this solution is that if I just replace non-ascii chars with arbitrary 
-# letters, then the stupid MS word dashes will also be replaced by letters, which will 
-# break the dedash function. Probably the easiest solution to that little glitch is to 
-# manually search and replace the dash strings.  
-
-# actually, why not just search and replace the dash strings in the script??  After all, 
-# python can handle unicode, it's only the regex character matching that's an issue. Then 
-# the dedash regex can just match on whatever arbitrary string I put in place of the 
-# dashes. And then I can convert everything else to ascii before doing the real regex 
-# with str.encode.  Ok, that's the plan.  it's dirty but it will work.  Snapshotting a 
-# version here with the regex that matches the stupid dashes first. 
+# note that this code cannot handle uncapitalized in last name space, mostly relevant 
+# for bell hooks and for van, von, etc.  None of those appear in my refs so I don't care. 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("citearg", help="the file containing the citations from footnotes etc.")
@@ -50,17 +21,18 @@ manuFiles = parser.parse_args()
 # totally unnecessary function but useful to keep head straight.
 # going to put in the moment I've got a string for refslist.
 def dumbDash(bigstring):
-	bigstring = bigstring.replace('———', 'DUMBDASHWASHERE')
-	bigstring = bigstring.replace('—', 'DUMBDASHWASHERE')
+	bigstring = bigstring.replace('———', '0DUMBDASHWASHERE')
+	bigstring = bigstring.replace('—', '0DUMBDASHWASHERE')
 	# just in case
 	return bigstring
 
 
 def conv2ASCII(bigstring): 
-	def convHandler(error)
-		return ('FOREIGN', error.start + 1)
+	def convHandler(error):
+		return ('1FOREIGN', error.start + 1)
 	codecs.register_error('foreign', convHandler)
 	bigstring = bigstring.encode('ascii', 'foreign')
+	return bigstring
 
 	
 
@@ -88,13 +60,16 @@ def dedash(reffchunk):
 # after dashblock, as an integer; second is year.  
 # needs to just return integer 0 if nothing is found.
 def goSearchDashes(refchunk): 
-	dashpattern = r'(^[^A-Za-z.]*\.).*( \(?\d\d\d\d[a-z]?[.)])'
+	dashpattern = r'(^0DUMBDASHWASHERE).*( \(?\d\d\d\d[a-z]?[.)])'
+	# keeping the old dash code around just in case.
+	#	dashpattern = r'(^[^A-Za-z.]*\.).*( \(?\d\d\d\d[a-z]?[.)])'
 	founddash = re.compile(dashpattern, re.MULTILINE)
 	firstmatch = founddash.search()
 	if firstmatch == None: 
 		return 0
 	else: 
 		year = firstmatch.group(2)
+		realrefpattern = r'^[A-Z1][A-Za-z1]*-?[A-Za-z1]*[,.]'
 
 # needs to return a two-item list, first item being string before index, second item being
 # string after index and this second string must start with a newline.  
@@ -138,7 +113,7 @@ def cleanup(rawList):
 
 
 def makeCiteList(citefile):
-    citepattern = r'[\s(][A-Z][A-Za-z]*-?[A-Za-z]*[ ,]? \(?\d\d\d\d[a-z]?[\s.,)]'
+    citepattern = r'[\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*[ ,]? \(?\d\d\d\d[a-z]?[\s.,)]'
     foundcites = re.compile(citepattern)
     rawCitelist = foundcites.findall()
     cleanCitelist = cleanup(rawCitelist)
@@ -147,7 +122,7 @@ def makeCiteList(citefile):
 
 
 def makeRefList(reffile):
-    namepattern = r'(^[A-Z][A-Za-z]*-?[A-Za-z]*),.*( \(?\d\d\d\d[a-z]?[.)])'
+    namepattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*),.*( \(?\d\d\d\d[a-z]?[.)])'
     foundrefs = re.compile(namepattern, re.MULTILINE)
     refsTuplesList = foundrefs.findall()
     rawRefslist = []
