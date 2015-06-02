@@ -1,4 +1,4 @@
-import sys, re, argparse, string
+import sys, re, argparse, string, codecs
 
 # written for python 3
 
@@ -46,6 +46,24 @@ manuFiles = parser.parse_args()
 				### REPEATED AUTHORS.  NOT YET COMPLETE
 #
 #
+
+# totally unnecessary function but useful to keep head straight.
+# going to put in the moment I've got a string for refslist.
+def dumbDash(bigstring):
+	bigstring = bigstring.replace('———', 'DUMBDASHWASHERE')
+	bigstring = bigstring.replace('—', 'DUMBDASHWASHERE')
+	# just in case
+	return bigstring
+
+
+def conv2ASCII(bigstring): 
+	def convHandler(error)
+		return ('FOREIGN', error.start + 1)
+	codecs.register_error('foreign', convHandler)
+	bigstring = bigstring.encode('ascii', 'foreign')
+
+	
+
 
 # call dedash from makereflist, then define another function down the line to concatenate 
 # its results with the results from the ordinary makereflist.
@@ -158,6 +176,7 @@ def checkCites(citefile, reffile):
     corpoi = makeCorpoi(citefile, reffile)
     citecorpus = corpoi[0]
     refcorpus = corpoi[1]
+    refcorpus = dumbDash(refcorpus)
     citelist = makeCiteList(citecorpus)
     reflist = makeRefList(refcorpus)
     unrefedcites = getMissing(citelist, reflist)
