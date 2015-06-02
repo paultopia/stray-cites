@@ -1,5 +1,7 @@
 import sys, re, argparse, string, codecs
 
+# THIS IS JUST A COPY OF THE AUTOCITE FOR DEBUGGING, TO ALLOW SOME TESTS.  IGNORE.
+
 # written for python 3
 
 # note that this code cannot handle uncapitalized in last name space, mostly relevant 
@@ -126,14 +128,32 @@ def cleanup(rawList):
         cleanlist.append(tempvar)
     return cleanlist
 
-
+# TEST VERSION OF MAKECITELIST TO SEE WHAT'S WRONG
 def makeCiteList(citefile):
-    citepattern = r'[\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*[ ,]? \(?\d\d\d\d[a-z]?[\s.,)]'
-    foundcites = re.compile(citepattern)
-    rawCitelist = foundcites.findall()
+    citepattern = r'brown cow'
+    rawCitelist = re.findall(citepattern, citefile)
+    # rawCitelist = re.findall(r'brown cow', citefile)
     cleanCitelist = cleanup(rawCitelist)
     finalCiteList = list(set(cleanCitelist))
-    return(finalCiteList)
+    print(finalCiteList)
+    # return(finalCiteList)
+    # print(rawCitelist)
+
+faketext = "the brown cow goes moo, your mom, your mom is a brown cow"
+
+faketext2 = "brown cow"
+
+makeCiteList(faketext)
+
+# makeCiteList(faketext2)
+
+# def makeCiteList(citefile):
+#     citepattern = r'[\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*[ ,]? \(?\d\d\d\d[a-z]?[\s.,)]'
+#     foundcites = re.compile(citepattern)
+#     rawCitelist = foundcites.findall()
+#     cleanCitelist = cleanup(rawCitelist)
+#     finalCiteList = list(set(cleanCitelist))
+#     return(finalCiteList)
 
 
 def makeRefList(reffile):
@@ -188,4 +208,5 @@ def checkCites(citefile, reffile):
     print(uncitedrefs)
     # if output is verbose consider sending to a file instead.  but it shouldn't be.
 
-checkCites(manuFiles.citearg, manuFiles.refarg)
+# checkCites(manuFiles.citearg, manuFiles.refarg)
+
