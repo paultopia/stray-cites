@@ -10,16 +10,11 @@ parser.add_argument("citearg", help="the file containing the citations from foot
 parser.add_argument("refarg", help="the file containing reference list")
 manuFiles = parser.parse_args()
 
-#####################################################################################
-#
-#
-#				### ALL THIS STUFF IS IN PROGRESS CODE TO DEAL WITH DASHED-LINE 
-				### REPEATED AUTHORS.  NOT YET COMPLETE
-#
-#
 
-# totally unnecessary function but useful to keep head straight.
-# going to put in the moment I've got a string for refslist.
+# totally unnecessary to define as function but useful to keep head straight.
+# this will only be useful for my text, if other people adapt it, should either 
+# generalize or replace the dashes with whatever you use for the repeated-author ref
+
 def dumbDash(bigstring):
 	bigstring = bigstring.replace('———', '0DUMBDASHWASHERE')
 	bigstring = bigstring.replace('—', '0DUMBDASHWASHERE')
@@ -37,8 +32,8 @@ def conv2ASCII(bigstring):
 	
 
 
-# call dedash from makereflist, then define another function down the line to concatenate 
-# its results with the results from the ordinary makereflist.
+# searches for repeat author refs beg. w/ dashes, concatenates them w/ name from root ref
+
 def dedash(reffchunk):
 	dashedlist = []
 	dashfound = goSearchDashes(refchunk)
@@ -48,17 +43,18 @@ def dedash(reffchunk):
 		choppedrefs = refsChopper(dashfound[0], refchunk)
 		year = dashfound[1]
 		name = goFindName(choppedrefs[0])
-		ref = name + year
-		dashedlist.append(ref)
+		ref = name + ' ' + year
+		dashedlist.extend(ref)
 		sublist = dedash(choppedrefs[1])
-		dashlist.extend(sublist)
+		dashedlist.extend(sublist)
+		return dashedlist
 
 	
 
-# search downward through string to find first reference line starting with non-char.
-# needs to return a two item-list, first item is index of line break before char 
-# after dashblock, as an integer; second is year.  
-# needs to just return integer 0 if nothing is found.
+# search downward through string to find first reference line starting with dash.
+# returns a two item-list, first item is index of char 
+# returns integer 0 if nothing is found.
+
 def goSearchDashes(refchunk): 
 	dashpattern = r'(^0DUMBDASHWASHERE).*( \(?\d\d\d\d[a-z]?[.)])'
 	# keeping the old dash code around just in case.
@@ -69,21 +65,40 @@ def goSearchDashes(refchunk):
 		return 0
 	else: 
 		year = firstmatch.group(2)
-		realrefpattern = r'^[A-Z1][A-Za-z1]*-?[A-Za-z1]*[,.]'
+		realrefpattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*[,.])'
+		foundreal = re.compile(realrefpattern, re.MULTILINE)
+		firstreal = foundreal.search()
+		splitIndex = firstreal.start()
+		theresults = [splitIndex, year]
+		return theresults
 
-# needs to return a two-item list, first item being string before index, second item being
-# string after index and this second string must start with a newline.  
-def refsChopper(index, list):
+# returns list of two strings, one before index, one after. Adds newlines just to be safe.
 
-# this carries out the back search.  needs to reverse string then search for newline 
-# followed by char, return the word that char starts.  (remember to reverse that word 
-# back again before returning)
+def refChopper(chopindex, refchunk): 
+	secondpart = refchunk[chopindex:len(refchunk)]
+	secondpart = '\n' + secondpart
+	firstpart = refchunk[0:chopindex]
+	firstpart = firstpart + '\n'
+	choppedlist = [firstpart, secondpart]
+	return choppedlist
+
+
+
+# this carries out the back search.  nreverse string then search for char 
+# followed by newline, return the word that ends in char.  (reversing again)
+# I suppose I could have just found the last match before index in a grouped list of 
+# matches rather than doing it this way, but damn the torpedoes, onward.
+
 def goFindName(refchunk):
-	
+	flipchunk = refchunk[::-1]
+	# how did anyone ever write code without google and stackoverflow?
+	backnamepattern = r'([A-Za-z1]*[A-Z1]$)'
+	foundname = re.compile(backnamepattern, re.MULTILINE)
+	rightname = foundname.search()
+	result = rightname.group
+	rightresult = result[::-1]
+	return rightresult
 
-#
-#
-#####################################################################################
 
 def makeCorpoi(citefile, reffile):
     citebox = open(citefile, 'r')
@@ -130,8 +145,11 @@ def makeRefList(reffile):
         tupestring = refsTuplesList[i]
         tupestring = ' '.join(tupestring)
         rawRefslist.append(tupestring)
-    finalRefsList = cleanup(rawRefslist)
-    # no need to de-dupe here: should be no duplicate values in refs list. (though it might be nice to throw a warning if there are)
+    newRefsList = cleanup(rawRefslist)
+    dashedList = dedash(reffile)
+    newRefsList.extend(dashedList)
+    # no need to de-dupe here: should be no duplicate values in refs list. 
+    # (though it might be nice to throw a warning if there are. bugrit)
 
 
 def getMissing(list1, list2):
@@ -150,8 +168,10 @@ def getMissing(list1, list2):
 def checkCites(citefile, reffile):
     corpoi = makeCorpoi(citefile, reffile)
     citecorpus = corpoi[0]
+    citecorpus = conv2ASCII(citecorpus)
     refcorpus = corpoi[1]
     refcorpus = dumbDash(refcorpus)
+    refcorpus = conv2ASCII(refcorpus)
     citelist = makeCiteList(citecorpus)
     reflist = makeRefList(refcorpus)
     unrefedcites = getMissing(citelist, reflist)
