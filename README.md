@@ -31,9 +31,4 @@ Pseudo-code/design:
 
 other people: use this if you want, but you'll have to change the regex for however your citations are formatted.
 
-
-MEMO TO SELF: 
-this code is broken, bec has no behavior to take account of subsequent author citations denoted w/ ———.  
-Possible fix: define a function that uses regex to find lines that start with non-letter non-whitespace, stores the year from that line, then searches upward recursively until it finds a line that starts with a character (i.e., the root cite), stores the author from that line, and then concatenates the author and the year.  Not quite sure how to implement the "searches upward" part of the behavior, though, except going back to the text file and reading in line by line.  Must be a better way... 
-
-(Maybe split the string when it finds one, take the resulting string and reverse-sort it, then just loop over that to find character strings that end in a newline?  it's madness... but it should work...)
+[update: added functionality to handle dashed lines leading repeated authors.  a bit heavy-handed and not general at all, but it should get the job done.  Still untested...]
