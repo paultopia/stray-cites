@@ -40,7 +40,7 @@ def cleanup(rawList)
 
 
 def makeCiteList(citefile)
-    citepattern = r'\s[A-Z][A-Za-z]*-?[A-Za-z]* \(?\d\d\d\d[a-z]?[\s.,)]'
+    citepattern = r'[\s(][A-Z][A-Za-z]*-?[A-Za-z]*[ ,]? \(?\d\d\d\d[a-z]?[\s.,)]'
     foundcites = re.compile(citepattern)
     rawCitelist = foundcites.findall()
     cleanCitelist = cleanup(rawCitelist)
