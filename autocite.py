@@ -150,7 +150,7 @@ def makeRefList(reffile):
 def getMissing(list1, list2):
     missingList = []
     for nameitem in list1:
-        matchFound == 0 
+        matchFound = 0 
         tempcite = nameitem
         for matcher in list2:
             if tempcite == matcher:
