@@ -38,7 +38,7 @@ def conv2ASCII(bigstring):
 def dedash(refchunk):
 	dashedlist = []
 	dashfound = goSearchDashes(refchunk)
-	if dashfound == 0:
+	if dashfound == None:
 		return dashedlist
 	else:
 		choppedrefs = refChopper(dashfound[0], refchunk)
@@ -63,16 +63,23 @@ def goSearchDashes(refchunk):
 	#	dashpattern = r'(^[^A-Za-z.]*\.).*( \(?\d\d\d\d[a-z]?[.)])'
 	firstmatch = re.search(dashpattern, refchunk, re.MULTILINE)
 	if firstmatch == None: 
-		return 0
+		return None
 	else: 
 		year = firstmatch.group(2)
 		realrefpattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*[,.])'
 		firstreal = re.search(realrefpattern, refchunk, re.MULTILINE)
 		# print(firstreal)
-		splitIndex = firstreal.start()
+		splitIndex = firstmatch.start()
 		theresults = [splitIndex, year]
 		# print(theresults)
 		return theresults
+# I don't think this will return correct results after the first dashblock: 
+# it throws out everything before the first dashblock, but that means NEXT iteration just
+# starts with a dashblock.  That's a disaster.  Really needs to throw out everything after
+# the dashblock.  possibly can do this by doing a second search for reals, and throwing
+# out everything before that.  e.g. changing re.search to re.findall and grabbing the 
+# index of the second one [1] to split on.  
+# so basically, splitindex is wrong.
 
 # returns list of two strings, one before index, one after. Adds newlines just to be safe.
 
@@ -99,9 +106,12 @@ def goFindName(refchunk):
 	flipchunk = refchunk[::-1]
 	# print(flipchunk)
 	backnamepattern = r'([A-Za-z1]*[A-Z1]$)'
-	rightname = re.search(backnamepattern, refchunk, re.MULTILINE)
-	result = rightname.group
-	rightresult = result[::-1]
+	rightname = re.search(backnamepattern, flipchunk, re.MULTILINE)
+	# print(rightname)
+	pgresult = rightname.group()
+	print(pgresult)
+	rightresult = pgresult[::-1]
+	print(rightresult)
 	return rightresult
 
 
