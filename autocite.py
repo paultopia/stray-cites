@@ -97,7 +97,7 @@ def goSearchDashes(refchunk):
 # if this needs to be generalized or adapted to something else.
 
 def refChopper(chopindex, refchunk): 
-	# print(chopindex)
+	print("cutting the text at: " + str(chopindex))
 	secondpart = refchunk[chopindex:len(refchunk)]
 	secondpart = '\n' + secondpart
 	firstpart = refchunk[0:chopindex]
@@ -122,9 +122,9 @@ def goFindName(refchunk):
 	rightname = re.search(backnamepattern, flipchunk, re.MULTILINE)
 	# print(rightname)
 	pgresult = rightname.group()
-	print(pgresult)
+	# print(pgresult)
 	rightresult = pgresult[::-1]
-	print(rightresult)
+	print("backward search found: " + rightresult)
 	return rightresult
 
 
