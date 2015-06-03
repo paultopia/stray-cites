@@ -143,6 +143,7 @@ def makeRefList(reffile):
     newRefsList = cleanup(rawRefslist)
     dashedList = dedash(reffile)
     newRefsList.extend(dashedList)
+    return(newRefsList)
     # no need to de-dupe here: should be no duplicate values in refs list. 
     # (though it might be nice to throw a warning if there are. bugrit)
 
