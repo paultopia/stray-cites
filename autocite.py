@@ -67,12 +67,13 @@ def goSearchDashes(refchunk):
 	else: 
 		year = firstmatch.group(2)
 		splitIndex = firstmatch.start()
-		tempstr = refchunk[0:splitIndex]
+		tempstr = refchunk[splitIndex:len(refchunk)]
 		realrefpattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*[,.])'
 		firstreal = re.search(realrefpattern, tempstr, re.MULTILINE)
 		# print(firstreal)
 		chopIndex = firstreal.start()
 		theresults = [chopIndex, year]
+		# print(chopIndex)
 		# print(theresults)
 		return theresults
 		
