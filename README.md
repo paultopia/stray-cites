@@ -66,3 +66,5 @@ if found, define that into the name variable and recurse.
 Also should strip out "Moreover," and "However," which may well have the "Real word [and,&] Ref" 
 format.  That's a preprocessing step.  No reason I can't do the same with "And," and "But," too 
 just to make sure. 
+
+while I'm stripping things out, might make sense to also strip out all ' von ' and ' van ' and ' de ' and any other little uncapitalized name stems surrounded by spaces.  (also strip out the ones with my foreign character placeholder in the middle, after preprocessing, to catch umlats and such.)
