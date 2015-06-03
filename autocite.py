@@ -27,7 +27,8 @@ def conv2ASCII(bigstring):
 		return ('1FOREIGN', error.start + 1)
 	codecs.register_error('foreign', convHandler)
 	bigstring = bigstring.encode('ascii', 'foreign')
-	return bigstring
+	stringstring = str(bigstring)
+	return stringstring
 
 	
 
@@ -103,7 +104,7 @@ def makeCorpoi(citefile, reffile):
     refcorpus = refbox.read()
     citebox.close()
     refbox.close()
-    corpoi = [citecorpus, refcorpus]
+    corpoi = [str(citecorpus), str(refcorpus)]
     return corpoi
 
 

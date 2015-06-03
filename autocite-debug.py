@@ -1,7 +1,5 @@
 import sys, re, argparse, string, codecs
 
-# THIS IS JUST A COPY OF THE AUTOCITE FOR DEBUGGING, TO ALLOW SOME TESTS.  IGNORE.
-
 # written for python 3
 
 # note that this code cannot handle uncapitalized in last name space, mostly relevant 
@@ -29,7 +27,8 @@ def conv2ASCII(bigstring):
 		return ('1FOREIGN', error.start + 1)
 	codecs.register_error('foreign', convHandler)
 	bigstring = bigstring.encode('ascii', 'foreign')
-	return bigstring
+	stringstring = str(bigstring)
+	return stringstring
 
 	
 
@@ -61,15 +60,13 @@ def goSearchDashes(refchunk):
 	dashpattern = r'(^0DUMBDASHWASHERE).*( \(?\d\d\d\d[a-z]?[.)])'
 	# keeping the old dash code around just in case.
 	#	dashpattern = r'(^[^A-Za-z.]*\.).*( \(?\d\d\d\d[a-z]?[.)])'
-	founddash = re.compile(dashpattern, re.MULTILINE)
-	firstmatch = founddash.search()
+	firstmatch = re.search(dashpattern, refchunk, re.MULTILINE)
 	if firstmatch == None: 
 		return 0
 	else: 
 		year = firstmatch.group(2)
 		realrefpattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*[,.])'
-		foundreal = re.compile(realrefpattern, re.MULTILINE)
-		firstreal = foundreal.search()
+		firstreal = re.search(realrefpattern, refchunk, re.MULTILINE)
 		splitIndex = firstreal.start()
 		theresults = [splitIndex, year]
 		return theresults
@@ -93,10 +90,8 @@ def refChopper(chopindex, refchunk):
 
 def goFindName(refchunk):
 	flipchunk = refchunk[::-1]
-	# how did anyone ever write code without google and stackoverflow?
 	backnamepattern = r'([A-Za-z1]*[A-Z1]$)'
-	foundname = re.compile(backnamepattern, re.MULTILINE)
-	rightname = foundname.search()
+	rightname = re.search(backnamepattern, re.MULTILINE)
 	result = rightname.group
 	rightresult = result[::-1]
 	return rightresult
@@ -109,14 +104,14 @@ def makeCorpoi(citefile, reffile):
     refcorpus = refbox.read()
     citebox.close()
     refbox.close()
-    corpoi = [citecorpus, refcorpus]
+    corpoi = [str(citecorpus), str(refcorpus)]
     return corpoi
 
 
 def cleanup(rawList):
     cleanlist = [] 
-    for i, c in enumerate(rawList):
-        tempvar = rawList[i]
+    for nameitem in rawList:
+        tempvar = nameitem
         tempvar = tempvar.replace(')', '')
         tempvar = tempvar.replace('(', '')
         tempvar = tempvar.replace(',', '')
@@ -128,41 +123,21 @@ def cleanup(rawList):
         cleanlist.append(tempvar)
     return cleanlist
 
-# TEST VERSION OF MAKECITELIST TO SEE WHAT'S WRONG
+
 def makeCiteList(citefile):
-    citepattern = r'brown cow'
+    citepattern = r'[\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*[ ,]? \(?\d\d\d\d[a-z]?[\s.,)]'
     rawCitelist = re.findall(citepattern, citefile)
-    # rawCitelist = re.findall(r'brown cow', citefile)
     cleanCitelist = cleanup(rawCitelist)
     finalCiteList = list(set(cleanCitelist))
-    print(finalCiteList)
-    # return(finalCiteList)
-    # print(rawCitelist)
-
-faketext = "the brown cow goes moo, your mom, your mom is a brown cow"
-
-faketext2 = "brown cow"
-
-makeCiteList(faketext)
-
-# makeCiteList(faketext2)
-
-# def makeCiteList(citefile):
-#     citepattern = r'[\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*[ ,]? \(?\d\d\d\d[a-z]?[\s.,)]'
-#     foundcites = re.compile(citepattern)
-#     rawCitelist = foundcites.findall()
-#     cleanCitelist = cleanup(rawCitelist)
-#     finalCiteList = list(set(cleanCitelist))
-#     return(finalCiteList)
+    return(finalCiteList)
 
 
 def makeRefList(reffile):
     namepattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*),.*( \(?\d\d\d\d[a-z]?[.)])'
-    foundrefs = re.compile(namepattern, re.MULTILINE)
-    refsTuplesList = foundrefs.findall()
+    refsTuplesList = re.findall(namepattern, reffile, re.MULTILINE)
     rawRefslist = []
-    for i in refsTuplesList:
-        tupestring = refsTuplesList[i]
+    for nameitem in refsTuplesList:
+        tupestring = nameitem
         tupestring = ' '.join(tupestring)
         rawRefslist.append(tupestring)
     newRefsList = cleanup(rawRefslist)
@@ -174,11 +149,11 @@ def makeRefList(reffile):
 
 def getMissing(list1, list2):
     missingList = []
-    for i in list1:
+    for nameitem in list1:
         matchFound == 0 
-        tempcite = list1[i]
-        for j in list2:
-            if tempcite == list2[j]:
+        tempcite = nameitem
+        for matcher in list2:
+            if tempcite == matcher:
                 matchFound = 1
                 break
         if matchFound == 1:
@@ -208,5 +183,4 @@ def checkCites(citefile, reffile):
     print(uncitedrefs)
     # if output is verbose consider sending to a file instead.  but it shouldn't be.
 
-# checkCites(manuFiles.citearg, manuFiles.refarg)
-
+checkCites(manuFiles.citearg, manuFiles.refarg)
