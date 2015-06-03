@@ -45,8 +45,13 @@ def dedash(refchunk):
 		year = dashfound[1]
 		# print(choppedrefs[0])
 		name = goFindName(choppedrefs[0])
-		ref = name + ' ' + year
-		dashedlist.extend(ref)
+		# print('dashname is:' + name)
+		# print ('dashyeae is: ' + year)
+		ref = str(name + ' ' + year)
+		# print('ref is: ' + ref)
+		refinlist = [ref]
+		dashedlist.extend(refinlist)
+		# print('preparing dashlist.  it currently is: ' + str(dashedlist) + '\n\n\n\n')
 		sublist = dedash(choppedrefs[1])
 		dashedlist.extend(sublist)
 		return dashedlist
@@ -67,16 +72,16 @@ def goSearchDashes(refchunk):
 	else: 
 		year = firstmatch.group(2)
 		splitIndex = firstmatch.start()
-		print('splitting at' + str(splitIndex))
+		# print('splitting at' + str(splitIndex))
 		tempstr = refchunk[splitIndex:len(refchunk)]
-		print('chunk to search for real: ' + tempstr + '\n\n\n')
+		# print('chunk to search for real: ' + tempstr + '\n\n\n')
 		realrefpattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*[,.])'
 		firstreal = re.search(realrefpattern, tempstr, re.MULTILINE)
-		print('real citation found: ' + firstreal.group(0))
+		# print('real citation found: ' + firstreal.group(0))
 		partialChopIndex = firstreal.start()
 		chopIndex = partialChopIndex + splitIndex
 		theresults = [chopIndex, year]
-		print('setting chopindex at' + str(chopIndex) + '\n\n\n')
+		# print('setting chopindex at' + str(chopIndex) + '\n\n\n')
 		# print(theresults)
 		return theresults
 		
@@ -98,16 +103,25 @@ def goSearchDashes(refchunk):
 # looking at my actual text, neither in the real set nor in the test set is my 
 # last entry a dash block.  So I don't need to fix this.  Screw it.  Save it for later 
 # if this needs to be generalized or adapted to something else.
+# 
+# ALSO: 
+# it finally fucking works, and the recursive search finds what it ought to find.
+#
+# CORRECTION: ######################################################################
+# 
+# not quite yet it doesn't.  now it fails to catch multiple dashcites in a single 
+# block, because the recursive search drops the whole block.  I can solve this behavior 
+# without tinkering too much with the functioning bits
 
 def refChopper(chopindex, refchunk): 
-	print("cutting the text on the basis of chopindex: " + str(chopindex))
+	# print("cutting the text on the basis of chopindex: " + str(chopindex))
 	secondpart = refchunk[chopindex:len(refchunk)]
 	secondpart = '\n' + secondpart
 	firstpart = refchunk[0:chopindex]
 	firstpart = firstpart + '\n'
 	# print(firstpart)
-	print("searching for name in: \n\n\n\n" + firstpart)
-	print("next recursion on: \n\n\n\n" + secondpart)
+	# print("searching for name in: \n\n\n\n" + firstpart)
+	# print("next recursion on: \n\n\n\n" + secondpart)
 	choppedlist = [firstpart, secondpart]
 	return choppedlist
 
@@ -128,7 +142,7 @@ def goFindName(refchunk):
 	pgresult = rightname.group()
 	# print(pgresult)
 	rightresult = pgresult[::-1]
-	print("backward search found: " + rightresult)
+	# print("backward search found: " + rightresult)
 	return rightresult
 
 
@@ -144,6 +158,7 @@ def makeCorpoi(citefile, reffile):
 
 
 def cleanup(rawList):
+    # print('rawlist is: ' + str(rawList))
     cleanlist = [] 
     for nameitem in rawList:
         tempvar = nameitem
@@ -156,6 +171,7 @@ def cleanup(rawList):
         tempvar = ' '.join(tempvar.split())
         # a little redundant, but who cares?
         cleanlist.append(tempvar)
+        # print('cleanlist is now' + str(cleanlist))
     return cleanlist
 
 
@@ -180,9 +196,11 @@ def makeRefList(reffile):
         tupestring = nameitem
         tupestring = ' '.join(tupestring)
         rawRefslist.append(tupestring)
-    newRefsList = cleanup(rawRefslist)
+    # print('rawlist pre-dedash is: ' + str(rawRefslist) + '\n\n')
     dashedList = dedash(reffile)
-    newRefsList.extend(dashedList)
+    print('dashlist is: ' + str(dashedList) + '\n\n')
+    rawRefslist.extend(dashedList)
+    newRefsList = cleanup(rawRefslist)
     return(newRefsList)
     # no need to de-dupe here: should be no duplicate values in refs list. 
     # (though it might be nice to throw a warning if there are. bugrit)
@@ -197,7 +215,7 @@ def getMissing(list1, list2):
             if tempcite == matcher:
                 matchFound = 1
                 break
-        if matchFound == 1:
+        if matchFound == 0:
             missingList.append(tempcite)
     return(missingList)
         
@@ -215,10 +233,9 @@ def checkCites(citefile, reffile):
     # print(citecorpus)
     # print(refcorpus)
     citelist = makeCiteList(citecorpus)
-    # print(citelist)
-    # print(refcorpus)
+    # print('citelist is: ' + str(citelist) + '\n\n\n')
     reflist = makeRefList(refcorpus)
-    # print(reflist)
+    # print('reflist is: ' + str(reflist) + '\n\n\n')
     unrefedcites = getMissing(citelist, reflist)
     uncitedrefs = getMissing(reflist, citelist)
     screwups = [unrefedcites, uncitedrefs]
@@ -230,6 +247,11 @@ def checkCites(citefile, reffile):
     print("\n")
     print("REFERENCES WITH NO CITATIONS")
     print(uncitedrefs)
-    # if output is verbose consider sending to a file instead.  but it shouldn't be.
+    if output is verbose consider sending to a file instead.  but it shouldn't be.
 
 checkCites(manuFiles.citearg, manuFiles.refarg)
+
+# ALMOST FINISHED.  EVERYTHING WORKS EXCEPT CATCHING MULTI-DASH CITATION BLOCKS. 
+# 
+# THERE ARE A LOT OF THOSE THOUGH.  IT MIGHT BE MOST SENSIBLE JUST TO DEFINE A SEPARATE 
+# FUNCTION THAT JUST SPITS THEM ALL OUT FOR CONVENIENT HAND-CHECKING?
