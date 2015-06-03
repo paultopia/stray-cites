@@ -59,15 +59,13 @@ def goSearchDashes(refchunk):
 	dashpattern = r'(^0DUMBDASHWASHERE).*( \(?\d\d\d\d[a-z]?[.)])'
 	# keeping the old dash code around just in case.
 	#	dashpattern = r'(^[^A-Za-z.]*\.).*( \(?\d\d\d\d[a-z]?[.)])'
-	founddash = re.compile(dashpattern, re.MULTILINE)
-	firstmatch = founddash.search()
+	firstmatch = re.search(dashpattern, refchunk, re.MULTILINE)
 	if firstmatch == None: 
 		return 0
 	else: 
 		year = firstmatch.group(2)
 		realrefpattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*[,.])'
-		foundreal = re.compile(realrefpattern, re.MULTILINE)
-		firstreal = foundreal.search()
+		firstreal = re.search(realrefpattern, refchunk, re.MULTILINE)
 		splitIndex = firstreal.start()
 		theresults = [splitIndex, year]
 		return theresults
@@ -91,10 +89,8 @@ def refChopper(chopindex, refchunk):
 
 def goFindName(refchunk):
 	flipchunk = refchunk[::-1]
-	# how did anyone ever write code without google and stackoverflow?
 	backnamepattern = r'([A-Za-z1]*[A-Z1]$)'
-	foundname = re.compile(backnamepattern, re.MULTILINE)
-	rightname = foundname.search()
+	rightname = re.search(backnamepattern, re.MULTILINE)
 	result = rightname.group
 	rightresult = result[::-1]
 	return rightresult
@@ -113,8 +109,8 @@ def makeCorpoi(citefile, reffile):
 
 def cleanup(rawList):
     cleanlist = [] 
-    for i, c in enumerate(rawList):
-        tempvar = rawList[i]
+    for nameitem in rawList:
+        tempvar = nameitem
         tempvar = tempvar.replace(')', '')
         tempvar = tempvar.replace('(', '')
         tempvar = tempvar.replace(',', '')
@@ -129,8 +125,7 @@ def cleanup(rawList):
 
 def makeCiteList(citefile):
     citepattern = r'[\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*[ ,]? \(?\d\d\d\d[a-z]?[\s.,)]'
-    foundcites = re.compile(citepattern)
-    rawCitelist = foundcites.findall()
+    rawCitelist = re.findall(citepattern, citefile)
     cleanCitelist = cleanup(rawCitelist)
     finalCiteList = list(set(cleanCitelist))
     return(finalCiteList)
@@ -138,11 +133,10 @@ def makeCiteList(citefile):
 
 def makeRefList(reffile):
     namepattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*),.*( \(?\d\d\d\d[a-z]?[.)])'
-    foundrefs = re.compile(namepattern, re.MULTILINE)
-    refsTuplesList = foundrefs.findall()
+    refsTuplesList = re.findall(namepattern, reffile, re.MULTILINE)
     rawRefslist = []
-    for i in refsTuplesList:
-        tupestring = refsTuplesList[i]
+    for nameitem in refsTuplesList:
+        tupestring = nameitem
         tupestring = ' '.join(tupestring)
         rawRefslist.append(tupestring)
     newRefsList = cleanup(rawRefslist)
@@ -154,11 +148,11 @@ def makeRefList(reffile):
 
 def getMissing(list1, list2):
     missingList = []
-    for i in list1:
+    for nameitem in list1:
         matchFound == 0 
-        tempcite = list1[i]
-        for j in list2:
-            if tempcite == list2[j]:
+        tempcite = nameitem
+        for matcher in list2:
+            if tempcite == matcher:
                 matchFound = 1
                 break
         if matchFound == 1:
