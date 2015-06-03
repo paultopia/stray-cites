@@ -80,6 +80,9 @@ def goSearchDashes(refchunk):
 # out everything before that.  e.g. changing re.search to re.findall and grabbing the 
 # index of the second one [1] to split on.  
 # so basically, splitindex is wrong.
+# but if I search on the second one, what happens when it reaches the end?  if the last 
+# cite is a dashed one, that will blow up.  I need to figure out what should 
+# happen when this reaches end of file. 
 
 # returns list of two strings, one before index, one after. Adds newlines just to be safe.
 
