@@ -51,5 +51,18 @@ to do: 1) just get rid of ", et al" and ", et. al." in preprocessing.
 2) implement some way to look backward in the cite matches (just take index -2?) to see 
 if there is a '&' or 'and' or ',', if so, look backward still further and grab previous name.
 do this recursively in a lookback function until it stops finding something formatted like a name.
---Note however that this strategy will break on the following format: "Real word [and,%] Ref", 
+--Note however that this strategy will break on the following format: "Real word [and,&] Ref", 
 but that's such bad grammar that I like to think I haven't done it.  
+
+one way to implement that would be to do another backwards search after checking for [and,&], 
+but it might be easier just to pick an arbitrary number of characters and search through there, 
+after all, references just aren't that long.  there's unlikely to be any reference that runs 
+longer than 50 characters. 
+
+Actually can combine these approaches.  So for each cite found, define a variable with the 
+name then grab a substring 50 characters back, and search for the pattern "Capsword [and,&]", 
+if found, define that into the name variable and recurse. 
+
+Also should strip out "Moreover," and "However," which may well have the "Real word [and,&] Ref" 
+format.  That's a preprocessing step.  No reason I can't do the same with "And," and "But," too 
+just to make sure. 
