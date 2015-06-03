@@ -43,6 +43,7 @@ def dedash(refchunk):
 	else:
 		choppedrefs = refChopper(dashfound[0], refchunk)
 		year = dashfound[1]
+		# print(choppedrefs[0])
 		name = goFindName(choppedrefs[0])
 		ref = name + ' ' + year
 		dashedlist.extend(ref)
@@ -67,17 +68,22 @@ def goSearchDashes(refchunk):
 		year = firstmatch.group(2)
 		realrefpattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*[,.])'
 		firstreal = re.search(realrefpattern, refchunk, re.MULTILINE)
+		# print(firstreal)
 		splitIndex = firstreal.start()
 		theresults = [splitIndex, year]
+		# print(theresults)
 		return theresults
 
 # returns list of two strings, one before index, one after. Adds newlines just to be safe.
 
 def refChopper(chopindex, refchunk): 
+	# print(chopindex)
 	secondpart = refchunk[chopindex:len(refchunk)]
 	secondpart = '\n' + secondpart
 	firstpart = refchunk[0:chopindex]
 	firstpart = firstpart + '\n'
+	# print(firstpart)
+	# print(secondpart)
 	choppedlist = [firstpart, secondpart]
 	return choppedlist
 
@@ -89,7 +95,9 @@ def refChopper(chopindex, refchunk):
 # matches rather than doing it this way, but damn the torpedoes, onward.
 
 def goFindName(refchunk):
+	# print(refchunk)
 	flipchunk = refchunk[::-1]
+	# print(flipchunk)
 	backnamepattern = r'([A-Za-z1]*[A-Z1]$)'
 	rightname = re.search(backnamepattern, refchunk, re.MULTILINE)
 	result = rightname.group
@@ -135,7 +143,7 @@ def makeCiteList(citefile):
 
 
 def makeRefList(reffile):
-    print(reffile)
+    # print(reffile)
     namepattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*),.*( \(?\d\d\d\d[a-z]?[.)])'
     # namepattern = r'Rawls'
     refsTuplesList = re.findall(namepattern, reffile, re.MULTILINE)
