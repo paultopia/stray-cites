@@ -66,25 +66,34 @@ def goSearchDashes(refchunk):
 		return None
 	else: 
 		year = firstmatch.group(2)
-		realrefpattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*[,.])'
-		firstreal = re.search(realrefpattern, refchunk, re.MULTILINE)
-		# print(firstreal)
 		splitIndex = firstmatch.start()
-		theresults = [splitIndex, year]
+		tempstr = refchunk[0:splitIndex]
+		realrefpattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*[,.])'
+		firstreal = re.search(realrefpattern, tempstr, re.MULTILINE)
+		# print(firstreal)
+		chopIndex = firstreal.start()
+		theresults = [chopIndex, year]
 		# print(theresults)
 		return theresults
-# I don't think this will return correct results after the first dashblock: 
-# it throws out everything before the first dashblock, but that means NEXT iteration just
-# starts with a dashblock.  That's a disaster.  Really needs to throw out everything after
-# the dashblock.  possibly can do this by doing a second search for reals, and throwing
-# out everything before that.  e.g. changing re.search to re.findall and grabbing the 
-# index of the second one [1] to split on.  
-# so basically, splitindex is wrong.
-# but if I search on the second one, what happens when it reaches the end?  if the last 
-# cite is a dashed one, that will blow up.  I need to figure out what should 
-# happen when this reaches end of file. 
-
-# returns list of two strings, one before index, one after. Adds newlines just to be safe.
+		
+# this new version halfway behaves correctly: it first does a temporary split on the 
+# start of the first dash block, and then searches everything after that for the next 
+# real item.  It then passes the index of that real item to the chopper function to 
+# chop up and give back for recursion in dedash().  So that's good.
+#
+# BUT: 
+#
+# what do I do if the last entry is a dash?  It won't find a next real one, and I'll have 
+# to return something that gracefully shuts it down without losing the last entry.  
+# how about just have it return end of the string -1 for the chopindex in that case, 
+# and then it will have something else to iterate over, won't find any more dash blocks, 
+# and will end normally.
+# 
+# HOWEVER: 
+#
+# looking at my actual text, neither in the real set nor in the test set is my 
+# last entry a dash block.  So I don't need to fix this.  Screw it.  Save it for later 
+# if this needs to be generalized or adapted to something else.
 
 def refChopper(chopindex, refchunk): 
 	# print(chopindex)
@@ -205,17 +214,17 @@ def checkCites(citefile, reffile):
     # print(refcorpus)
     reflist = makeRefList(refcorpus)
     # print(reflist)
-    # unrefedcites = getMissing(citelist, reflist)
-    # uncitedrefs = getMissing(reflist, citelist)
-    # screwups = [unrefedcites, uncitedrefs]
-    # print("CITATIONS WITH NO REFERENCES")
-    # print("\n")
-    # print(unrefedcites)
-    # print("\n")
-    # print("\n")
-    # print("\n")
-    # print("REFERENCES WITH NO CITATIONS")
-    # print(uncitedrefs)
+    unrefedcites = getMissing(citelist, reflist)
+    uncitedrefs = getMissing(reflist, citelist)
+    screwups = [unrefedcites, uncitedrefs]
+    print("CITATIONS WITH NO REFERENCES")
+    print("\n")
+    print(unrefedcites)
+    print("\n")
+    print("\n")
+    print("\n")
+    print("REFERENCES WITH NO CITATIONS")
+    print(uncitedrefs)
     # if output is verbose consider sending to a file instead.  but it shouldn't be.
 
 checkCites(manuFiles.citearg, manuFiles.refarg)
