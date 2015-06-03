@@ -67,13 +67,16 @@ def goSearchDashes(refchunk):
 	else: 
 		year = firstmatch.group(2)
 		splitIndex = firstmatch.start()
+		print('splitting at' + str(splitIndex))
 		tempstr = refchunk[splitIndex:len(refchunk)]
+		print('chunk to search for real: ' + tempstr + '\n\n\n')
 		realrefpattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*[,.])'
 		firstreal = re.search(realrefpattern, tempstr, re.MULTILINE)
-		# print(firstreal)
-		chopIndex = firstreal.start()
+		print('real citation found: ' + firstreal.group(0))
+		partialChopIndex = firstreal.start()
+		chopIndex = partialChopIndex + splitIndex
 		theresults = [chopIndex, year]
-		# print(chopIndex)
+		print('setting chopindex at' + str(chopIndex) + '\n\n\n')
 		# print(theresults)
 		return theresults
 		
@@ -97,13 +100,14 @@ def goSearchDashes(refchunk):
 # if this needs to be generalized or adapted to something else.
 
 def refChopper(chopindex, refchunk): 
-	print("cutting the text at: " + str(chopindex))
+	print("cutting the text on the basis of chopindex: " + str(chopindex))
 	secondpart = refchunk[chopindex:len(refchunk)]
 	secondpart = '\n' + secondpart
 	firstpart = refchunk[0:chopindex]
 	firstpart = firstpart + '\n'
 	# print(firstpart)
-	# print(secondpart)
+	print("searching for name in: \n\n\n\n" + firstpart)
+	print("next recursion on: \n\n\n\n" + secondpart)
 	choppedlist = [firstpart, secondpart]
 	return choppedlist
 
