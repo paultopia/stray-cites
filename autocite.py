@@ -24,10 +24,16 @@ manuFiles = parser.parse_args()
 # to be called by gosearchdashes, which will have to be amended to return a list of years, 
 # and dedash will have to loop over that list and match each year to the name.
 # will need to be passed a substring from gosearchdashes splitindex:chopindex
+# if there's only one year, just passes None up to GSD; GSD should check for none before 
+# and either change what it passes or not.  then DD should check length before doing anything
 
 def captureAllYears(substring):
 	dashYearGroups = r'^0DUMBDASHWASHERE.*( \(?\d\d\d\d[a-z]?[.)])'
 	yearlist = re.findall(dashYearGroups, substring, re.MULTILINE)
+	if len(yearlist) == 1:
+		return(None)
+	else:
+		return(yearlist)
 
 
 #
