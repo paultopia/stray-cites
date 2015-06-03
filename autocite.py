@@ -35,7 +35,7 @@ def conv2ASCII(bigstring):
 
 # searches for repeat author refs beg. w/ dashes, concatenates them w/ name from root ref
 
-def dedash(reffchunk):
+def dedash(refchunk):
 	dashedlist = []
 	dashfound = goSearchDashes(refchunk)
 	if dashfound == 0:

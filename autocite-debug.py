@@ -81,7 +81,10 @@ def refChopper(chopindex, refchunk):
 	choppedlist = [firstpart, secondpart]
 	return choppedlist
 
+teststring = "a cat on a hat \n0DUMBDASHWASHERE. \nJones, Tom boo 2011. here is some text \n0DUMBDASHWASHERE. meow 1995. more text."
 
+attempt = goSearchDashes(teststring)
+print(attempt)
 
 # this carries out the back search.  nreverse string then search for char 
 # followed by newline, return the word that ends in char.  (reversing again)
@@ -183,4 +186,4 @@ def checkCites(citefile, reffile):
     print(uncitedrefs)
     # if output is verbose consider sending to a file instead.  but it shouldn't be.
 
-checkCites(manuFiles.citearg, manuFiles.refarg)
+# checkCites(manuFiles.citearg, manuFiles.refarg)
