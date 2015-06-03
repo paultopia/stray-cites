@@ -42,3 +42,14 @@ instances of a concatenator that combines year for each match w/ the name.
 will require a little bit of change in structure.  line searcher will have to return a number 
 and a list of years (or just a list of years?), dedash will have to pull out the years and 
 repeatedly match them to the name (probably in an external function).  not so bad. 
+Probably achievable by making another substring, this one between the index of the first 
+dash dash found and the index of the first realname found, and then searching for dash-year 
+pairs in there based on existing regex
+
+ALSO: test references do not contain any multi-author cites.  this will probably break. 
+to do: 1) just get rid of ", et al" and ", et. al." in preprocessing.  
+2) implement some way to look backward in the cite matches (just take index -2?) to see 
+if there is a '&' or 'and' or ',', if so, look backward still further and grab previous name.
+do this recursively in a lookback function until it stops finding something formatted like a name.
+--Note however that this strategy will break on the following format: "Real word [and,%] Ref", 
+but that's such bad grammar that I like to think I haven't done it.  
