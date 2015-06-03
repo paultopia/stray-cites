@@ -27,8 +27,8 @@ def conv2ASCII(bigstring):
 		return ('1FOREIGN', error.start + 1)
 	codecs.register_error('foreign', convHandler)
 	bigstring = bigstring.encode('ascii', 'foreign')
-	stringstring = str(bigstring)
-	return stringstring
+	newstring = bigstring.decode('ascii', 'foreign')
+	return newstring
 
 	
 
@@ -41,7 +41,7 @@ def dedash(refchunk):
 	if dashfound == 0:
 		return dashedlist
 	else:
-		choppedrefs = refsChopper(dashfound[0], refchunk)
+		choppedrefs = refChopper(dashfound[0], refchunk)
 		year = dashfound[1]
 		name = goFindName(choppedrefs[0])
 		ref = name + ' ' + year
@@ -91,7 +91,7 @@ def refChopper(chopindex, refchunk):
 def goFindName(refchunk):
 	flipchunk = refchunk[::-1]
 	backnamepattern = r'([A-Za-z1]*[A-Z1]$)'
-	rightname = re.search(backnamepattern, re.MULTILINE)
+	rightname = re.search(backnamepattern, refchunk, re.MULTILINE)
 	result = rightname.group
 	rightresult = result[::-1]
 	return rightresult
@@ -125,16 +125,21 @@ def cleanup(rawList):
 
 
 def makeCiteList(citefile):
+    # print(citefile)
     citepattern = r'[\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*[ ,]? \(?\d\d\d\d[a-z]?[\s.,)]'
     rawCitelist = re.findall(citepattern, citefile)
     cleanCitelist = cleanup(rawCitelist)
     finalCiteList = list(set(cleanCitelist))
+    # print(finalCiteList)
     return(finalCiteList)
 
 
 def makeRefList(reffile):
+    print(reffile)
     namepattern = r'(^[A-Z1][A-Za-z1]*-?[A-Za-z1]*),.*( \(?\d\d\d\d[a-z]?[.)])'
+    # namepattern = r'Rawls'
     refsTuplesList = re.findall(namepattern, reffile, re.MULTILINE)
+    # print(refsTuplesList)
     rawRefslist = []
     for nameitem in refsTuplesList:
         tupestring = nameitem
@@ -167,21 +172,29 @@ def checkCites(citefile, reffile):
     citecorpus = corpoi[0]
     citecorpus = conv2ASCII(citecorpus)
     refcorpus = corpoi[1]
+    # print(refcorpus)
+    # print(corpoi[1])
     refcorpus = dumbDash(refcorpus)
+    # print(refcorpus)
     refcorpus = conv2ASCII(refcorpus)
+    # print(citecorpus)
+    # print(refcorpus)
     citelist = makeCiteList(citecorpus)
+    # print(citelist)
+    # print(refcorpus)
     reflist = makeRefList(refcorpus)
-    unrefedcites = getMissing(citelist, reflist)
-    uncitedrefs = getMissing(reflist, citelist)
-    screwups = [unrefedcites, uncitedrefs]
-    print("CITATIONS WITH NO REFERENCES")
-    print("\n")
-    print(unrefedcites)
-    print("\n")
-    print("\n")
-    print("\n")
-    print("REFERENCES WITH NO CITATIONS")
-    print(uncitedrefs)
+    # print(reflist)
+    # unrefedcites = getMissing(citelist, reflist)
+    # uncitedrefs = getMissing(reflist, citelist)
+    # screwups = [unrefedcites, uncitedrefs]
+    # print("CITATIONS WITH NO REFERENCES")
+    # print("\n")
+    # print(unrefedcites)
+    # print("\n")
+    # print("\n")
+    # print("\n")
+    # print("REFERENCES WITH NO CITATIONS")
+    # print(uncitedrefs)
     # if output is verbose consider sending to a file instead.  but it shouldn't be.
 
 checkCites(manuFiles.citearg, manuFiles.refarg)
