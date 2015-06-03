@@ -11,6 +11,33 @@ parser.add_argument("refarg", help="the file containing reference list")
 manuFiles = parser.parse_args()
 
 
+#######################################################
+#
+#
+#           MORE NEW STUFF IN PROGRESS
+#
+# multiple authors + multiline dashed citation blocks
+# 
+
+
+# function to capture all the years from a block of yeartext.
+# to be called by gosearchdashes, which will have to be amended to return a list of years, 
+# and dedash will have to loop over that list and match each year to the name.
+# will need to be passed a substring from gosearchdashes splitindex:chopindex
+
+def captureAllYears(substring):
+	dashYearGroups = r'^0DUMBDASHWASHERE.*( \(?\d\d\d\d[a-z]?[.)])'
+	yearlist = re.findall(dashYearGroups, substring, re.MULTILINE)
+
+
+#
+#
+#######################################################
+
+
+
+
+
 # totally unnecessary to define as function but useful to keep head straight.
 # this will only be useful for my text, if other people adapt it, should either 
 # generalize or replace the dashes with whatever you use for the repeated-author ref
