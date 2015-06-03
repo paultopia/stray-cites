@@ -32,3 +32,13 @@ Pseudo-code/design:
 other people: use this if you want, but you'll have to change the regex for however your citations are formatted.
 
 [update: added functionality to handle dashed lines leading repeated authors.  a bit heavy-handed and not general at all, but it should get the job done.  Still untested...]
+
+
+note to self: everything now works except it can't handle multiple dash-starting refs.  that's a tomorrow project
+
+strategy: just match all dash-starting refs in a block, count the matches, and then generate N 
+instances of a concatenator that combines year for each match w/ the name.  
+
+will require a little bit of change in structure.  line searcher will have to return a number 
+and a list of years (or just a list of years?), dedash will have to pull out the years and 
+repeatedly match them to the name (probably in an external function).  not so bad. 
