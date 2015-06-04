@@ -1,22 +1,5 @@
 import sys, re, argparse, string, codecs
 
-#######################################################
-#
-#
-#			ROLLBACK VERSION 1
-#
-# everything except commented out code is verified to work.  However, it fails to appropriately 
-# handle: 
-# 1.  multiline blocks of dashes in ref list
-# 2.  multiple authors in cites.
-# 
-# after this version, I will turn on the multiple dashes functionality, test, and fix the broken 
-# parts.  Then I'll commit rollback version 2, and do the same with the multiple authors functionality.
-# 
-#
-#######################################################
-
-
 
 
 # written for python 3
@@ -46,38 +29,18 @@ manuFiles = parser.parse_args()
 # if there's only one year, just passes None up to GSD; GSD should check for none before 
 # and either change what it passes or not.  then DD should check length before doing anything
 
-# def captureAllYears(substring):
-# 	dashYearGroups = r'^0DUMBDASHWASHERE.*( \(?\d\d\d\d[a-z]?[.)])'
-# 	yearlist = re.findall(dashYearGroups, substring, re.MULTILINE)
-# 	if len(yearlist) == 1:
-# 		return(None)
-# 	else:
-# 		return(yearlist)
+def captureAllYears(substring):
+	dashYearGroups = r'^0DUMBDASHWASHERE.*( \(?\d\d\d\d[a-z]?[.)])'
+	yearlist = re.findall(dashYearGroups, substring, re.MULTILINE)
+	if len(yearlist) == 1:
+		return(None)
+	else:
+		return(yearlist)
 
 
-# code to add to GSD
-# moreyears = captureAllYears(refchunk[splitIndex:chopIndex])
-# if moreyears != None:
-# 	theresults = [chopIndex, moreyears]
+
 	
-# code to add to DD (in the else condition), after creating choppedrefs but before making sublist
-# (i.e. sublist is out of the conditional)
-# if isinstance(dashfound[1], str):
-	# existing code block
-	
-	# this should work because if captureAllYears finds anything it'll be passed into GSD as 
-	# a list. Otherwise it'll be passed from GSD as a string.
-	# also I really fucking hope python doesn't think a list of strings evaluates to a string.
-	# that's exactly the sort of garbage python would do.  If it does, I may fly to silicon 
-	# valley and slap guido around a little. It is insanely hard to keep track of data types 
-	# in this stupid language. 
-	
-# else: 
-# 	name = goFindName(choppedrefs[0])
-# 	for year in dashfound[1]:
-# 		ref = str(name + ' ' + year)
-# 		refinlist = [ref]
-# 		dashedlist.extend(refinlist)
+
 
 
 # what follows is code to get the multiple-author stuff sorted out in the makecite dpt.
@@ -175,19 +138,32 @@ def dedash(refchunk):
 		return dashedlist
 	else:
 		choppedrefs = refChopper(dashfound[0], refchunk)
-		year = dashfound[1]
-		# print(choppedrefs[0])
 		name = goFindName(choppedrefs[0])
-		# print('dashname is:' + name)
-		# print ('dashyeae is: ' + year)
-		ref = str(name + ' ' + year)
-		# print('ref is: ' + ref)
-		refinlist = [ref]
-		dashedlist.extend(refinlist)
-		# print('preparing dashlist.  it currently is: ' + str(dashedlist) + '\n\n\n\n')
+		if isinstance(dashfound[1], str):			
+			year = dashfound[1]
+			# print(choppedrefs[0])
+			# print('dashname is:' + name)
+			# print ('dashyeae is: ' + year)
+			ref = str(name + ' ' + year)
+			# print('ref is: ' + ref)
+			refinlist = [ref]
+			dashedlist.extend(refinlist)
+			# print('preparing dashlist.  it currently is: ' + str(dashedlist) + '\n\n\n\n')
+		else:
+			for year in dashfound[1]:
+				ref = str(name + ' ' + year)
+				refinlist = [ref]
+				dashedlist.extend(refinlist)
 		sublist = dedash(choppedrefs[1])
 		dashedlist.extend(sublist)
 		return dashedlist
+	# this should work because if captureAllYears finds anything it'll be passed into GSD as 
+	# a list. Otherwise it'll be passed from GSD as a string.
+	# also I really fucking hope python doesn't think a list of strings evaluates to a string.
+	# that's exactly the sort of garbage python would do.  If it does, I may fly to silicon 
+	# valley and slap guido around a little. It is insanely hard to keep track of data types 
+	# in this stupid language. 
+
 
 	
 
@@ -214,6 +190,9 @@ def goSearchDashes(refchunk):
 		partialChopIndex = firstreal.start()
 		chopIndex = partialChopIndex + splitIndex
 		theresults = [chopIndex, year]
+		moreyears = captureAllYears(refchunk[splitIndex:chopIndex])
+			if moreyears != None:
+				theresults = [chopIndex, moreyears]
 		# print('setting chopindex at' + str(chopIndex) + '\n\n\n')
 		# print(theresults)
 		return theresults
