@@ -97,9 +97,12 @@ def clearcrap(bigstring):
 	bigstring = bigstring.replace('However, ', ' ')
 	bigstring = bigstring.replace('And, ', ' ')
 	bigstring = bigstring.replace('But, ', ' ')
+	
+def deAnd(bigstring):
 	bigstring = bigstring.replace(', and ', ', ')
 	bigstring = bigstring.replace(' and ', ', ')
 	bigstring = bigstring.replace(' & ', ', ')
+	# unlike the previous, this one is only applied to citestring.  
 	# getting rid of ands to simplify the regex for searching multiple authors below
 
 # I've decided to handle the whole multiple-authors problem in the hackiest possible way. 
@@ -223,6 +226,8 @@ def goSearchDashes(refchunk):
 # not quite yet it doesn't.  now it fails to catch multiple dashcites in a single 
 # block, because the recursive search drops the whole block.  I can solve this behavior 
 # without tinkering too much with the functioning bits
+# 
+# new code above is attempt to handle this.
 
 def refChopper(chopindex, refchunk): 
 	# print("cutting the text on the basis of chopindex: " + str(chopindex))
@@ -362,7 +367,3 @@ def checkCites(citefile, reffile):
 
 checkCites(manuFiles.citearg, manuFiles.refarg)
 
-# ALMOST FINISHED.  EVERYTHING WORKS EXCEPT CATCHING MULTI-DASH CITATION BLOCKS. 
-# 
-# THERE ARE A LOT OF THOSE THOUGH.  IT MIGHT BE MOST SENSIBLE JUST TO DEFINE A SEPARATE 
-# FUNCTION THAT JUST SPITS THEM ALL OUT FOR CONVENIENT HAND-CHECKING?
