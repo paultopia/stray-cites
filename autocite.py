@@ -36,6 +36,28 @@ def captureAllYears(substring):
 		return(yearlist)
 
 
+# code to add to GSD
+moreyears = captureAllYears(refchunk[splitIndex:chopIndex])
+if moreyears != None:
+	theresults = [chopIndex, moreyears]
+	
+# code to add to DD (in the else condition), after creating choppedrefs but before making sublist
+# (i.e. sublist is out of the conditional)
+if len(dashfound[1]) == 1:
+	# existing code block
+else: 
+	name = goFindName(choppedrefs[0])
+	for year in dashfound[1]:
+		ref = str(name + ' ' + year)
+		refinlist = [ref]
+		dashedlist.extend(refinlist)
+# actually i dont even need the condition, i like to hope python can handle iterating over a 
+# list of 1.  though if i just put this code in in place of the concatenator, i should wrap 
+# length 1 years in a list first so it doesnt try to iterate over a string?	
+# ACTUALLY i need to do that anyway, lest even the conditional tries to measure length of string 
+# rather than number of years, and then return number of chars in year.
+# maybe i could use some kind of test for listness or stringness instead?  check syntax.
+
 #
 #
 #######################################################
