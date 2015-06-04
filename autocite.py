@@ -1,5 +1,24 @@
 import sys, re, argparse, string, codecs
 
+#######################################################
+#
+#
+#			ROLLBACK VERSION 1
+#
+# everything except commented out code is verified to work.  However, it fails to appropriately 
+# handle: 
+# 1.  multiline blocks of dashes in ref list
+# 2.  multiple authors in cites.
+# 
+# after this version, I will turn on the multiple dashes functionality, test, and fix the broken 
+# parts.  Then I'll commit rollback version 2, and do the same with the multiple authors functionality.
+# 
+#
+#######################################################
+
+
+
+
 # written for python 3
 
 # note that this code cannot handle uncapitalized in last name space, mostly relevant 
@@ -27,23 +46,23 @@ manuFiles = parser.parse_args()
 # if there's only one year, just passes None up to GSD; GSD should check for none before 
 # and either change what it passes or not.  then DD should check length before doing anything
 
-def captureAllYears(substring):
-	dashYearGroups = r'^0DUMBDASHWASHERE.*( \(?\d\d\d\d[a-z]?[.)])'
-	yearlist = re.findall(dashYearGroups, substring, re.MULTILINE)
-	if len(yearlist) == 1:
-		return(None)
-	else:
-		return(yearlist)
+# def captureAllYears(substring):
+# 	dashYearGroups = r'^0DUMBDASHWASHERE.*( \(?\d\d\d\d[a-z]?[.)])'
+# 	yearlist = re.findall(dashYearGroups, substring, re.MULTILINE)
+# 	if len(yearlist) == 1:
+# 		return(None)
+# 	else:
+# 		return(yearlist)
 
 
 # code to add to GSD
-moreyears = captureAllYears(refchunk[splitIndex:chopIndex])
-if moreyears != None:
-	theresults = [chopIndex, moreyears]
+# moreyears = captureAllYears(refchunk[splitIndex:chopIndex])
+# if moreyears != None:
+# 	theresults = [chopIndex, moreyears]
 	
 # code to add to DD (in the else condition), after creating choppedrefs but before making sublist
 # (i.e. sublist is out of the conditional)
-if isinstance(dashfound[1], str):
+# if isinstance(dashfound[1], str):
 	# existing code block
 	
 	# this should work because if captureAllYears finds anything it'll be passed into GSD as 
@@ -53,12 +72,12 @@ if isinstance(dashfound[1], str):
 	# valley and slap guido around a little. It is insanely hard to keep track of data types 
 	# in this stupid language. 
 	
-else: 
-	name = goFindName(choppedrefs[0])
-	for year in dashfound[1]:
-		ref = str(name + ' ' + year)
-		refinlist = [ref]
-		dashedlist.extend(refinlist)
+# else: 
+# 	name = goFindName(choppedrefs[0])
+# 	for year in dashfound[1]:
+# 		ref = str(name + ' ' + year)
+# 		refinlist = [ref]
+# 		dashedlist.extend(refinlist)
 
 
 # what follows is code to get the multiple-author stuff sorted out in the makecite dpt.
@@ -66,55 +85,55 @@ else:
 # goes in after the conversion to ascii.
 # should apply this to the reflist as well just to make sure. 
 
-def clearcrap(bigstring):
-	bigstring = bigstring.replace(' von ', ' ')
-	bigstring = bigstring.replace(' v1FOREIGNn ', ' ')
-	bigstring = bigstring.replace(' van ', ' ')
-	bigstring = bigstring.replace(' de ', ' ')
-	bigstring = bigstring.replace(' d1FOREIGN ', ' ')
-	bigstring = bigstring.replace(' der ', ' ')
-	bigstring = bigstring.replace(' den ', ' ')
-	bigstring = bigstring.replace(' d1FOREIGNn ', ' ')
-	bigstring = bigstring.replace(' da ', ' ')
-	bigstring = bigstring.replace(' la ', ' ')
-	bigstring = bigstring.replace(' l1FOREIGN ', ' ')
-	bigstring = bigstring.replace(' du ', ' ')
-	bigstring = bigstring.replace(' d\'', ' ')
-	bigstring = bigstring.replace(' Von ', ' ')
-	bigstring = bigstring.replace(' V1FOREIGNn ', ' ')
-	bigstring = bigstring.replace(' Van ', ' ')
-	bigstring = bigstring.replace(' De ', ' ')
-	bigstring = bigstring.replace(' D1FOREIGN ', ' ')
-	bigstring = bigstring.replace(' Der ', ' ')
-	bigstring = bigstring.replace(' Den ', ' ')
-	bigstring = bigstring.replace(' D1FOREIGNn ', ' ')
-	bigstring = bigstring.replace(' Da ', ' ')
-	bigstring = bigstring.replace(' La ', ' ')
-	bigstring = bigstring.replace(' L1FOREIGN ', ' ')
-	bigstring = bigstring.replace(' Du ', ' ')
-	bigstring = bigstring.replace(' D\'', ' ')
-	bigstring = bigstring.replace('Moreover, ', ' ')
-	bigstring = bigstring.replace('However, ', ' ')
-	bigstring = bigstring.replace('And, ', ' ')
-	bigstring = bigstring.replace('But, ', ' ')
-	
-def deAnd(bigstring):
-	bigstring = bigstring.replace(', and ', ', ')
-	bigstring = bigstring.replace(' and ', ', ')
-	bigstring = bigstring.replace(' & ', ', ')
+# def clearcrap(bigstring):
+# 	bigstring = bigstring.replace(' von ', ' ')
+# 	bigstring = bigstring.replace(' v1FOREIGNn ', ' ')
+# 	bigstring = bigstring.replace(' van ', ' ')
+# 	bigstring = bigstring.replace(' de ', ' ')
+# 	bigstring = bigstring.replace(' d1FOREIGN ', ' ')
+# 	bigstring = bigstring.replace(' der ', ' ')
+# 	bigstring = bigstring.replace(' den ', ' ')
+# 	bigstring = bigstring.replace(' d1FOREIGNn ', ' ')
+# 	bigstring = bigstring.replace(' da ', ' ')
+# 	bigstring = bigstring.replace(' la ', ' ')
+# 	bigstring = bigstring.replace(' l1FOREIGN ', ' ')
+# 	bigstring = bigstring.replace(' du ', ' ')
+# 	bigstring = bigstring.replace(' d\'', ' ')
+# 	bigstring = bigstring.replace(' Von ', ' ')
+# 	bigstring = bigstring.replace(' V1FOREIGNn ', ' ')
+# 	bigstring = bigstring.replace(' Van ', ' ')
+# 	bigstring = bigstring.replace(' De ', ' ')
+# 	bigstring = bigstring.replace(' D1FOREIGN ', ' ')
+# 	bigstring = bigstring.replace(' Der ', ' ')
+# 	bigstring = bigstring.replace(' Den ', ' ')
+# 	bigstring = bigstring.replace(' D1FOREIGNn ', ' ')
+# 	bigstring = bigstring.replace(' Da ', ' ')
+# 	bigstring = bigstring.replace(' La ', ' ')
+# 	bigstring = bigstring.replace(' L1FOREIGN ', ' ')
+# 	bigstring = bigstring.replace(' Du ', ' ')
+# 	bigstring = bigstring.replace(' D\'', ' ')
+# 	bigstring = bigstring.replace('Moreover, ', ' ')
+# 	bigstring = bigstring.replace('However, ', ' ')
+# 	bigstring = bigstring.replace('And, ', ' ')
+# 	bigstring = bigstring.replace('But, ', ' ')
+
+# def deAnd(bigstring):
+# 	bigstring = bigstring.replace(', and ', ', ')
+# 	bigstring = bigstring.replace(' and ', ', ')
+# 	bigstring = bigstring.replace(' & ', ', ')
 	# unlike the previous, this one is only applied to citestring.  
 	# getting rid of ands to simplify the regex for searching multiple authors below
 
 # I've decided to handle the whole multiple-authors problem in the hackiest possible way. 
 # I'm going to simply strip out all authors beyond the first.  
 
-def multiAuthor(citestring):
-	longcite = r'([\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*,)[\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*[ ,]? (\(?\d\d\d\d[a-z]?[\s.,)])'
+# def multiAuthor(citestring):
+# 	longcite = r'([\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*,)[\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*[ ,]? (\(?\d\d\d\d[a-z]?[\s.,)])'
 	# then replace with group1 plus group2 plus space. This will iteratively strip out all but second-to last name
 	# until only first name is left.  
-	for x in range(0, 10):
-		newstring = re.sub(longcite, '\g<1> \g<2>', citestring)
-	return(newstring)
+# 	for x in range(0, 10):
+# 		newstring = re.sub(longcite, '\g<1> \g<2>', citestring)
+# 	return(newstring)
 
 		
 #
