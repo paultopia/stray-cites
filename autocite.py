@@ -43,21 +43,77 @@ if moreyears != None:
 	
 # code to add to DD (in the else condition), after creating choppedrefs but before making sublist
 # (i.e. sublist is out of the conditional)
-if len(dashfound[1]) == 1:
+if isinstance(dashfound[1], str):
 	# existing code block
+	
+	# this should work because if captureAllYears finds anything it'll be passed into GSD as 
+	# a list. Otherwise it'll be passed from GSD as a string.
+	# also I really fucking hope python doesn't think a list of strings evaluates to a string.
+	# that's exactly the sort of garbage python would do.  If it does, I may fly to silicon 
+	# valley and slap guido around a little. It is insanely hard to keep track of data types 
+	# in this stupid language. 
+	
 else: 
 	name = goFindName(choppedrefs[0])
 	for year in dashfound[1]:
 		ref = str(name + ' ' + year)
 		refinlist = [ref]
 		dashedlist.extend(refinlist)
-# actually i dont even need the condition, i like to hope python can handle iterating over a 
-# list of 1.  though if i just put this code in in place of the concatenator, i should wrap 
-# length 1 years in a list first so it doesnt try to iterate over a string?	
-# ACTUALLY i need to do that anyway, lest even the conditional tries to measure length of string 
-# rather than number of years, and then return number of chars in year.
-# maybe i could use some kind of test for listness or stringness instead?  check syntax.
 
+
+# what follows is code to get the multiple-author stuff sorted out in the makecite dpt.
+# first a function to add to get rid of all vans vons des and the like. 
+# goes in after the conversion to ascii.
+# should apply this to the reflist as well just to make sure. 
+
+def clearcrap(bigstring):
+	bigstring = bigstring.replace(' von ', ' ')
+	bigstring = bigstring.replace(' v1FOREIGNn ', ' ')
+	bigstring = bigstring.replace(' van ', ' ')
+	bigstring = bigstring.replace(' de ', ' ')
+	bigstring = bigstring.replace(' d1FOREIGN ', ' ')
+	bigstring = bigstring.replace(' der ', ' ')
+	bigstring = bigstring.replace(' den ', ' ')
+	bigstring = bigstring.replace(' d1FOREIGNn ', ' ')
+	bigstring = bigstring.replace(' da ', ' ')
+	bigstring = bigstring.replace(' la ', ' ')
+	bigstring = bigstring.replace(' l1FOREIGN ', ' ')
+	bigstring = bigstring.replace(' du ', ' ')
+	bigstring = bigstring.replace(' d\'', ' ')
+	bigstring = bigstring.replace(' Von ', ' ')
+	bigstring = bigstring.replace(' V1FOREIGNn ', ' ')
+	bigstring = bigstring.replace(' Van ', ' ')
+	bigstring = bigstring.replace(' De ', ' ')
+	bigstring = bigstring.replace(' D1FOREIGN ', ' ')
+	bigstring = bigstring.replace(' Der ', ' ')
+	bigstring = bigstring.replace(' Den ', ' ')
+	bigstring = bigstring.replace(' D1FOREIGNn ', ' ')
+	bigstring = bigstring.replace(' Da ', ' ')
+	bigstring = bigstring.replace(' La ', ' ')
+	bigstring = bigstring.replace(' L1FOREIGN ', ' ')
+	bigstring = bigstring.replace(' Du ', ' ')
+	bigstring = bigstring.replace(' D\'', ' ')
+	bigstring = bigstring.replace('Moreover, ', ' ')
+	bigstring = bigstring.replace('However, ', ' ')
+	bigstring = bigstring.replace('And, ', ' ')
+	bigstring = bigstring.replace('But, ', ' ')
+	bigstring = bigstring.replace(', and ', ', ')
+	bigstring = bigstring.replace(' and ', ', ')
+	bigstring = bigstring.replace(' & ', ', ')
+	# getting rid of ands to simplify the regex for searching multiple authors below
+
+# I've decided to handle the whole multiple-authors problem in the hackiest possible way. 
+# I'm going to simply strip out all authors beyond the first.  
+
+def multiAuthor(citestring):
+	longcite = r'([\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*,)[\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*[ ,]? (\(?\d\d\d\d[a-z]?[\s.,)])'
+	# then replace with group1 plus group2 plus space. This will iteratively strip out all but second-to last name
+	# until only first name is left.  
+	for x in range(0, 10):
+		newstring = re.sub(longcite, '\g<1> \g<2>', citestring)
+	return(newstring)
+
+		
 #
 #
 #######################################################
