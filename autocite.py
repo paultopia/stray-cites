@@ -1,16 +1,5 @@
 import sys, re, argparse, string, codecs
 
-###########################################################
-#
-# 
-#			ROLLBACK VERSION 2.5 
-# 
-#			garbage stripping works.  haven't yet integrated multicite, 
-# 			but all in here works.
-#
-#
-###########################################################
-
 
 
 # written for python 3
@@ -49,10 +38,6 @@ def captureAllYears(substring):
 
 
 
-# what follows is code to get the multiple-author stuff sorted out in the makecite dpt.
-# first a function to add to get rid of all vans vons des and the like. 
-# goes in after the conversion to ascii.
-# should apply this to the reflist as well just to make sure. 
 
 def clearcrap(bigstring):
 	bigstring = bigstring.replace(' von ', ' ')
@@ -100,13 +85,13 @@ def deAnd(bigstring):
 # I've decided to handle the whole multiple-authors problem in the hackiest possible way. 
 # I'm going to simply strip out all authors beyond the first.  
 
-# def multiAuthor(citestring):
-# 	longcite = r'([\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*,)[\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*[ ,]? (\(?\d\d\d\d[a-z]?[\s.,)])'
+def multiAuthor(citestring):
+	longcite = r'([\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*,)[\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*[ ,]? (\(?\d\d\d\d[a-z]?[\s.,)])'
 	# then replace with group1 plus group2 plus space. This will iteratively strip out all but second-to last name
 	# until only first name is left.  
-# 	for x in range(0, 10):
-# 		newstring = re.sub(longcite, '\g<1> \g<2>', citestring)
-# 	return(newstring)
+	for x in range(0, 10):
+		newstring = re.sub(longcite, '\g<1> \g<2>', citestring)
+	return(newstring)
 
 		
 #
@@ -359,7 +344,10 @@ def checkCites(citefile, reffile):
     refcorpus = conv2ASCII(refcorpus)
     refcorpus = clearcrap(refcorpus)
     print(citecorpus)
-    print(refcorpus)
+    citecorpus = multiAuthor(citecorpus)
+    print('\n\n\n\n MULTI AUTHORS STRIPPED \n\n\n\n')
+    print(citecorpus)
+    # print(refcorpus)
     citelist = makeCiteList(citecorpus)
     # print('citelist is: ' + str(citelist) + '\n\n\n')
     reflist = makeRefList(refcorpus)
