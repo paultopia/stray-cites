@@ -70,6 +70,18 @@ def clearcrap(bigstring):
 	bigstring = bigstring.replace('However, ', ' ')
 	bigstring = bigstring.replace('And, ', ' ')
 	bigstring = bigstring.replace('But, ', ' ')
+	bigstring = bigstring.replace('Thus, ', ' ')
+	bigstring = bigstring.replace('Therefore, ', ' ')
+	bigstring = bigstring.replace('Consequently, ', ' ')
+	bigstring = bigstring.replace('Accordingly, ', ' ')
+	bigstring = bigstring.replace('Finally, ', ' ')
+	bigstring = bigstring.replace('Next, ', ' ')
+	bigstring = bigstring.replace('First, ', ' ')
+	bigstring = bigstring.replace('Second, ', ' ')
+	bigstring = bigstring.replace('Third, ', ' ')
+	bigstring = bigstring.replace('Fourth, ', ' ')
+	bigstring = bigstring.replace('Fifth, ', ' ')
+	bigstring = bigstring.replace('Indeed, ', ' ')
 	return(bigstring)
 
 def deAnd(bigstring):
@@ -86,7 +98,7 @@ def deAnd(bigstring):
 # I'm going to simply strip out all authors beyond the first.  
 
 def multiAuthor(citestring):
-	longcite = r'([\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*,)[\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*[ ,]? (\(?\d\d\d\d[a-z]?[\s.,)])'
+	longcite = r'([\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*),[\s(][A-Z1][A-Za-z1]*-?[A-Za-z1]*[ ,]?( \(?\d\d\d\d[a-z]?[\s.,)])'
 	# then replace with group1 plus group2 plus space. This will iteratively strip out all but second-to last name
 	# until only first name is left.  
 	for x in range(0, 10):
