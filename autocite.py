@@ -1,20 +1,15 @@
 import sys, re, argparse, string, codecs
 
-
-#######################################################
+###########################################################
 #
-#
-#           ROLLBACK VERSION 2
-#
-#
-# 	multiple dashed line reflist entry handling verified to work. 
 # 
-#	all uncommented code does what it should.
+#			ROLLBACK VERSION 2.5 
+# 
+#			garbage stripping works.  haven't yet integrated multicite, 
+# 			but all in here works.
 #
-# 	now to try multiple authors in a cite code.
 #
-#
-#######################################################
+###########################################################
 
 
 
@@ -59,42 +54,46 @@ def captureAllYears(substring):
 # goes in after the conversion to ascii.
 # should apply this to the reflist as well just to make sure. 
 
-# def clearcrap(bigstring):
-# 	bigstring = bigstring.replace(' von ', ' ')
-# 	bigstring = bigstring.replace(' v1FOREIGNn ', ' ')
-# 	bigstring = bigstring.replace(' van ', ' ')
-# 	bigstring = bigstring.replace(' de ', ' ')
-# 	bigstring = bigstring.replace(' d1FOREIGN ', ' ')
-# 	bigstring = bigstring.replace(' der ', ' ')
-# 	bigstring = bigstring.replace(' den ', ' ')
-# 	bigstring = bigstring.replace(' d1FOREIGNn ', ' ')
-# 	bigstring = bigstring.replace(' da ', ' ')
-# 	bigstring = bigstring.replace(' la ', ' ')
-# 	bigstring = bigstring.replace(' l1FOREIGN ', ' ')
-# 	bigstring = bigstring.replace(' du ', ' ')
-# 	bigstring = bigstring.replace(' d\'', ' ')
-# 	bigstring = bigstring.replace(' Von ', ' ')
-# 	bigstring = bigstring.replace(' V1FOREIGNn ', ' ')
-# 	bigstring = bigstring.replace(' Van ', ' ')
-# 	bigstring = bigstring.replace(' De ', ' ')
-# 	bigstring = bigstring.replace(' D1FOREIGN ', ' ')
-# 	bigstring = bigstring.replace(' Der ', ' ')
-# 	bigstring = bigstring.replace(' Den ', ' ')
-# 	bigstring = bigstring.replace(' D1FOREIGNn ', ' ')
-# 	bigstring = bigstring.replace(' Da ', ' ')
-# 	bigstring = bigstring.replace(' La ', ' ')
-# 	bigstring = bigstring.replace(' L1FOREIGN ', ' ')
-# 	bigstring = bigstring.replace(' Du ', ' ')
-# 	bigstring = bigstring.replace(' D\'', ' ')
-# 	bigstring = bigstring.replace('Moreover, ', ' ')
-# 	bigstring = bigstring.replace('However, ', ' ')
-# 	bigstring = bigstring.replace('And, ', ' ')
-# 	bigstring = bigstring.replace('But, ', ' ')
+def clearcrap(bigstring):
+	bigstring = bigstring.replace(' von ', ' ')
+	bigstring = bigstring.replace(' v1FOREIGNn ', ' ')
+	bigstring = bigstring.replace(' van ', ' ')
+	bigstring = bigstring.replace(' de ', ' ')
+	bigstring = bigstring.replace(' d1FOREIGN ', ' ')
+	bigstring = bigstring.replace(' der ', ' ')
+	bigstring = bigstring.replace(' den ', ' ')
+	bigstring = bigstring.replace(' d1FOREIGNn ', ' ')
+	bigstring = bigstring.replace(' da ', ' ')
+	bigstring = bigstring.replace(' la ', ' ')
+	bigstring = bigstring.replace(' l1FOREIGN ', ' ')
+	bigstring = bigstring.replace(' du ', ' ')
+	bigstring = bigstring.replace(' d\'', ' ')
+	bigstring = bigstring.replace(' Von ', ' ')
+	bigstring = bigstring.replace(' V1FOREIGNn ', ' ')
+	bigstring = bigstring.replace(' Van ', ' ')
+	bigstring = bigstring.replace(' De ', ' ')
+	bigstring = bigstring.replace(' D1FOREIGN ', ' ')
+	bigstring = bigstring.replace(' Der ', ' ')
+	bigstring = bigstring.replace(' Den ', ' ')
+	bigstring = bigstring.replace(' D1FOREIGNn ', ' ')
+	bigstring = bigstring.replace(' Da ', ' ')
+	bigstring = bigstring.replace(' La ', ' ')
+	bigstring = bigstring.replace(' L1FOREIGN ', ' ')
+	bigstring = bigstring.replace(' Du ', ' ')
+	bigstring = bigstring.replace(' D\'', ' ')
+	bigstring = bigstring.replace('Moreover, ', ' ')
+	bigstring = bigstring.replace('However, ', ' ')
+	bigstring = bigstring.replace('And, ', ' ')
+	bigstring = bigstring.replace('But, ', ' ')
+	return(bigstring)
 
-# def deAnd(bigstring):
-# 	bigstring = bigstring.replace(', and ', ', ')
-# 	bigstring = bigstring.replace(' and ', ', ')
-# 	bigstring = bigstring.replace(' & ', ', ')
+def deAnd(bigstring):
+	bigstring = bigstring.replace(', and ', ', ')
+	bigstring = bigstring.replace(' and ', ', ')
+	bigstring = bigstring.replace(' & ', ', ')
+	bigstring = bigstring.replace(',,', ',')
+	bigstring = bigstring.replace(',,', ',')
+	return(bigstring)
 	# unlike the previous, this one is only applied to citestring.  
 	# getting rid of ands to simplify the regex for searching multiple authors below
 
@@ -350,14 +349,17 @@ def checkCites(citefile, reffile):
     corpoi = makeCorpoi(citefile, reffile)
     citecorpus = corpoi[0]
     citecorpus = conv2ASCII(citecorpus)
+    citecorpus = clearcrap(citecorpus)
+    citecorpus = deAnd(citecorpus)
     refcorpus = corpoi[1]
     # print(refcorpus)
     # print(corpoi[1])
     refcorpus = dumbDash(refcorpus)
     # print(refcorpus)
     refcorpus = conv2ASCII(refcorpus)
-    # print(citecorpus)
-    # print(refcorpus)
+    refcorpus = clearcrap(refcorpus)
+    print(citecorpus)
+    print(refcorpus)
     citelist = makeCiteList(citecorpus)
     # print('citelist is: ' + str(citelist) + '\n\n\n')
     reflist = makeRefList(refcorpus)
