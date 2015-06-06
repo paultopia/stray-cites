@@ -1,6 +1,22 @@
 import sys, re, argparse, string, codecs
 
 
+#######################################################
+#
+#
+#           ROLLBACK VERSION 2
+#
+#
+# 	multiple dashed line reflist entry handling verified to work. 
+# 
+#	all uncommented code does what it should.
+#
+# 	now to try multiple authors in a cite code.
+#
+#
+#######################################################
+
+
 
 # written for python 3
 
@@ -13,21 +29,7 @@ parser.add_argument("refarg", help="the file containing reference list")
 manuFiles = parser.parse_args()
 
 
-#######################################################
-#
-#
-#           MORE NEW STUFF IN PROGRESS
-#
-# multiple authors + multiline dashed citation blocks
-# 
 
-
-# function to capture all the years from a block of yeartext.
-# to be called by gosearchdashes, which will have to be amended to return a list of years, 
-# and dedash will have to loop over that list and match each year to the name.
-# will need to be passed a substring from gosearchdashes splitindex:chopindex
-# if there's only one year, just passes None up to GSD; GSD should check for none before 
-# and either change what it passes or not.  then DD should check length before doing anything
 
 def captureAllYears(substring):
 	dashYearGroups = r'^0DUMBDASHWASHERE.*( \(?\d\d\d\d[a-z]?[.)])'
@@ -39,7 +41,16 @@ def captureAllYears(substring):
 
 
 
+
 	
+#######################################################
+#
+#
+#           MORE NEW STUFF IN PROGRESS
+#
+# multiple authors 
+# 
+
 
 
 
@@ -153,6 +164,7 @@ def dedash(refchunk):
 			for year in dashfound[1]:
 				ref = str(name + ' ' + year)
 				refinlist = [ref]
+				# print('appending reference: ' + ref)
 				dashedlist.extend(refinlist)
 		sublist = dedash(choppedrefs[1])
 		dashedlist.extend(sublist)
@@ -191,8 +203,8 @@ def goSearchDashes(refchunk):
 		chopIndex = partialChopIndex + splitIndex
 		theresults = [chopIndex, year]
 		moreyears = captureAllYears(refchunk[splitIndex:chopIndex])
-			if moreyears != None:
-				theresults = [chopIndex, moreyears]
+		if moreyears != None:
+			theresults = [chopIndex, moreyears]
 		# print('setting chopindex at' + str(chopIndex) + '\n\n\n')
 		# print(theresults)
 		return theresults
@@ -312,7 +324,7 @@ def makeRefList(reffile):
         rawRefslist.append(tupestring)
     # print('rawlist pre-dedash is: ' + str(rawRefslist) + '\n\n')
     dashedList = dedash(reffile)
-    print('dashlist is: ' + str(dashedList) + '\n\n')
+    # print('dashlist is: ' + str(dashedList) + '\n\n')
     rawRefslist.extend(dashedList)
     newRefsList = cleanup(rawRefslist)
     return(newRefsList)
@@ -361,7 +373,7 @@ def checkCites(citefile, reffile):
     print("\n")
     print("REFERENCES WITH NO CITATIONS")
     print(uncitedrefs)
-    if output is verbose consider sending to a file instead.  but it shouldn't be.
+    # if output is verbose consider sending to a file instead.  but it shouldn't be.
 
 checkCites(manuFiles.citearg, manuFiles.refarg)
 
