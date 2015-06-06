@@ -102,8 +102,8 @@ def multiAuthor(citestring):
 	# then replace with group1 plus group2 plus space. This will iteratively strip out all but second-to last name
 	# until only first name is left.  
 	for x in range(0, 10):
-		newstring = re.sub(longcite, '\g<1>\g<2>', citestring)
-	return(newstring)
+		citestring = re.sub(longcite, '\g<1>\g<2>', citestring)
+	return(citestring)
 
 		
 #
